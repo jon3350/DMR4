@@ -1,0 +1,14 @@
+#labelContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#labelContainer div:nth-child(6),
+#labelContainer div:nth-child(7),
+#labelContainer div:nth-child(8) {
+    text-decoration: line-through;
+}
+
+.hide {
+    display: none;
+}

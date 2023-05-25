@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="mathUtil.js" defer></script>
+    <script src="seriesUtil.js" defer></script>
+    <script src="pageUtil.js" defer></script>
+    <script src="pageFolder/menuPage.js" defer></script>
+    <script src="pageFolder/notesPage.js" defer></script>
+    <script src="pageFolder/practicePage.js" defer></script>
+    <script src="pageFolder/gamePage.js" defer></script>
+    <script src="script.js" defer></script>
+    <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="pageContainer">
+        <div id="menuPage" class="page">
+            <div>Series Sequence Review</div>
+            <div>MenuPage</div>
+            <button id="notesButton">notes</button>
+            <button id="practiceButton">practice</button>
+            <button id="gameButton">game</button>
+        </div>
+        <div id="notesPage" class="page">
+            <div>NotesPage</div>
+            <button class="menuButton">Menu</button>
+        </div>
+            <div id="practicePage" class="page">
+            <div id="labelContainer">
+                <div>
+                    <label>
+                        nth Term Test
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Geometric
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Telescoping
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Integral Test
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        p-series
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Direct Comparison Test
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Limit Comparison Test
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Alternating Series Test
+                        <input type="checkbox">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Ratio Test
+                        <input type="checkbox">
+                    </label>
+                </div>
+            </div>
+        
+            <br>
+            <div id="seriesDisplay"></div>
+        
+            <div id="questionDisplay">
+
+            </div>
+        
+            <button id="submitButton">Submit</button>
+            <button class="menuButton">Menu</button>
+        
+            <dialog id="answerModal">
+                <div id="modalMessage">Correct</div>
+                <div id="modalExplaination"></div>
+                <button id="closeModalButton">Close</button>
+            </dialog>
+        </div>
+        <div id="gamePage" class="page">
+            <div>GamePage</div>
+            <div>Lives Left (temp)</div>
+            <div id="hangman">5</div>
+            <div id="timeLeft">Time Left: <span>42</span></div>
+            <div id="score">Score: <span>10</span></div>
+            <div id="highScore">HighScore: <span>20</span></div>
+            <div id="questionDisplay2">
+
+            </div>
+
+            <button id="submitButton2">Submit</button>
+            <button class="menuButton">Menu</button>
+        </div>
+    </div>
+
+</body>
+</html>
