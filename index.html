@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
     <script src="mathUtil.js" defer></script>
     <script src="seriesUtil.js" defer></script>
+    <script src="mcqUtil.js" defer></script>
     <script src="pageUtil.js" defer></script>
     <script src="pageFolder/menuPage.js" defer></script>
     <script src="pageFolder/notesPage.js" defer></script>
@@ -14,112 +21,478 @@
     <script src="pageFolder/gamePage.js" defer></script>
     <script src="script.js" defer></script>
     <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        </script>
     <title>Document</title>
 </head>
+
 <body>
     <div id="pageContainer">
-        <div id="menuPage" class="page">
-            <div>Series Sequence Review</div>
-            <div>MenuPage</div>
-            <button id="notesButton">notes</button>
-            <button id="practiceButton">practice</button>
-            <button id="gameButton">game</button>
-        </div>
-        <div id="notesPage" class="page">
-            <div>NotesPage</div>
-            <button class="menuButton">Menu</button>
-        </div>
-            <div id="practicePage" class="page">
-            <div id="labelContainer">
-                <div>
-                    <label>
-                        nth Term Test
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Geometric
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Telescoping
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Integral Test
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        p-series
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Direct Comparison Test
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Limit Comparison Test
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Alternating Series Test
-                        <input type="checkbox">
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Ratio Test
-                        <input type="checkbox">
-                    </label>
-                </div>
-            </div>
-        
-            <br>
-            <div id="seriesDisplay"></div>
-        
-            <div id="questionDisplay">
 
+
+
+        <!-- MENUPAGE -->
+        <div id="menuPage" class="page">
+            <div class="container text-center">
+                <div class="row p-3">
+                    <div class="col">
+                        <h1 class="display-1"><strong> Sequence and Series Review </strong></h1>
+                    </div>
+                </div>
+                <div class="row mt-3 p-3">
+                    <div class="col">
+                        <h2 class="display-1"> <u> Main Menu </u></h2>
+                    </div>
+                </div>
+                <div class="row gy-5">
+                    <div class="col-12">
+                        <button id="notesButton" class="btn btn-light btn-lg col-lg-4 col-5">
+                            <div class="display-5">Notes</div>
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <button id="practiceButton" class="btn btn-light btn-lg col-lg-4 col-5">
+                            <div class="display-5">Practice</div>
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <button id="gameButton" class="btn btn-light btn-lg col-lg-4 col-5">
+                            <div class="display-5">Game</div>
+                        </button>
+                    </div>
+                </div>
             </div>
-        
-            <button id="submitButton">Submit</button>
-            <button class="menuButton">Menu</button>
-        
+        </div>
+
+
+
+
+
+
+        <!-- NOTESPAGE -->
+        <div id="notesPage" class="page">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col">
+                        <div class="display-1 mb-2"><u>Series Review Chart</u></div>
+                    </div>
+                    <div class="col-1 m-auto">
+                        <button class="btn btn-danger btn-lg">
+                            <div class="menuButton display-5 ps-2 pe-2 text-center align-self-center">&times;</div>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <table
+                            class="table table-bordered table-responsive table-info table-striped text-center text-bg-info">
+                            <thead>
+                                <tr>
+                                    <th>Test</th>
+                                    <th>Series</th>
+                                    <th>Condition for Convergence</th>
+                                    <th>Condition for Divergence</th>
+                                    <th>Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <td>\(n^{th}\) term test</td>
+                                    <td>\[\sum_{n=1}^{\infty} a_n\]</td>
+                                    <td></td>
+                                    <td>\[\lim\limits_{n \to \infty} a_n \ne 0\]</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Geometric</td>
+                                    <td>\[ \sum_{n=1}^{\infty} ar^{n-1}\] \[ \sum_{n=0}^{\infty} ar^{n} \]</td>
+                                    <td>\[ \left|r \right| \lt 1 \]</td>
+                                    <td>\[ \left|r \right| \gt 1 \]</td>
+                                    <td>\[ S_{\infty} = \frac{a}{1-r} \] a is 1st term
+                    </div>
+                    </td>
+                    </tr>
+                    <tr>
+                        <td>Telescoping</td>
+                        <td>\[ \sum_{n=1}^{\infty} \left ( b_n-b_{n+1} \right ) \]</td>
+                        <td>\[ \lim_{n \to \infty} b_n = L \]</td>
+                        <td>\[ \]</td>
+                        <td>\[ S = b_1 - L \]</td>
+                    </tr>
+                    <tr>
+                        <td>Integral Test</td>
+                        <td>\[ \sum_{n=1}^{\infty} a_n\]</td>
+                        <td>\[ \int_{1}^{\infty} f(x)dx \] converges</td>
+                        <td>\[ \int_{1}^{\infty} f(x)dx \] diverges</td>
+                        <td>\( a_n \) must be positive, continuous, and decreasing for x \( \geq 1 \)</td>
+                    </tr>
+                    <tr>
+                        <td>P-series</td>
+                        <td>\[ \sum_{n=1}^{\infty} \frac{1}{n^p} \]</td>
+                        <td>\[ p \gt 1 \]</td>
+                        <td>\[ 0 \lt p \leq 1 \]</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Direct Comparison Test</td>
+                        <td>\[ \sum_{n=1}^{\infty} a_n\]</td>
+                        <td>\[ 0 \leq a_n \leq b_n \] \( b_n \) converges</td>
+                        <td>\[ 0 \leq b_n \leq a_n \] \( b_n \) diverges</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Limit Comparison Test</td>
+                        <td>\[ \sum_{n=1}^{\infty} a_n\]</td>
+                        <td>\[ \lim_{n \to \infty} \frac{a_n}{b_n} = L \] \( b_n \) converges</td>
+                        <td>\[ \lim_{n \to \infty} \frac{a_n}{b_n} = L \] \( b_n \) diverges</td>
+                        <td>\[ a_n \gt 0 \] \[ b_n \gt 0 \] \( L \gt 0 \) and finite</td>
+                    </tr>
+                    <tr>
+                        <td>Alternating Series Test</td>
+                        <td>\[ \sum_{n=1}^{\infty} (-1)^{n} a_n\] \[ \sum_{n=1}^{\infty} (-1)^{n+1} a_n\]</td>
+                        <td>\[1. \; \lim_{n \to \infty} a_n = 0 \] \[2. \; a_{n+1} \leq a_{n} \; \forall \; n \geq 1 \]
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Ratio Test</td>
+                        <td>\[ \sum_{n=1}^{\infty} a_n\]</td>
+                        <td>\[ \lim_{n \to \infty} \left | \frac{a_{n+1}}{a_{n}} \right | \lt 1 \]</td>
+                        <td>\[ \lim_{n \to \infty} \left | \frac{a_{n+1}}{a_{n}} \right | \gt 1 \]</td>
+                        <td>\[ \lim_{n \to \infty} \left | \frac{a_{n+1}}{a_{n}} \right | = 1 \] test fails</td>
+                    </tr>
+                    <tfoot class="table-group-divider">
+                        <tr>
+                            <th>Test</th>
+                            <th>Series</th>
+                            <th>Condition for Convergence</th>
+                            <th>Condition for Divergence</th>
+                            <th>Comment</th>
+                        </tr>
+                    </tfoot>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="menuButton   btn btn-light col-8 col-lg-4 m-3">
+                        <div class="display-4">Menu</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <!-- PRACTICE PAGE -->
+    <div id="practicePage" class="page">
+        <div class="container text-center">
+            <div class="row m-2">
+                <div class="display-4"><u>Practice</u></div>
+            </div>
+
+            <div class="row m-3">
+                <div class="col">
+                    <button class="btn btn-primary" data-bs-toggle="collapse"
+                        data-bs-target="#collapseDiv">Customize</button>
+                </div>
+                <div class="col">
+                    <button class="menuButton btn btn-primary">Menu</button>
+                </div>
+            </div>
+
+            <div id="collapseDiv" class="collapse row m-3">
+                <div class="card text-bg-warning">
+                    <div class="card-body">
+                        <div class="container">
+                            <div id="labelContainer" class="row">
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        nth Term Test
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Geometric
+                                    </label>
+                                </div>
+                                <div class="form check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Telescoping
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Integral Test
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        p-series
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Direct Comparison Test
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Limit Comparison Test
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Alternating Series Test
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Ratio Test
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="seriesDisplay"></div>
+
+            <div class="row m-4">
+                <div class="col">
+                    <div class="card text-bg-light">
+                        <div data-questionNumberDiv class="card-header display-6">Question <span>1</span></div>
+                        <div class="card-body">
+                            <div id="questionDisplay">
+                                <!-- js inserts stuff here -->
+                            </div>
+                            <div class="hstack justify-content-around">
+                                <button id="submitButton" class="btn btn-info m-3">
+                                    <div class="display-6">Submit</div>
+                                </button>
+                                <div id="htmlPracticePageModalCollapseTarget" class="collapse">
+                                    <button data-newProblemButton class="btn btn-info m-3">
+                                        <div class="display-6">New Problem</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <dialog id="answerModal">
-                <div id="modalMessage">Correct</div>
-                <div id="modalExplaination"></div>
-                <button id="closeModalButton">Close</button>
+                <div id="modalMessage" class="display-6">Correct</div>
+                <div id="modalExplaination" class="mt-4"></div>
+                <div class="hstack justify-content-around">
+                    <button data-nextQuestionButton class="btn btn-primary mt-4">Next Question</button>
+                    <button id="closeModalButton" class="btn btn-light mt-4" data-bs-toggle="collapse"
+                        data-bs-target="#htmlPracticePageModalCollapseTarget">Close</button>
+                </div>
             </dialog>
         </div>
-        <div id="gamePage" class="page">
-            <div>GamePage</div>
-            <div>Lives Left (temp)</div>
-            <div id="hangman">5</div>
-            <div id="timeLeft">Time Left: <span>42</span></div>
-            <div id="score">Score: <span>10</span></div>
-            <div id="highScore">HighScore: <span>20</span></div>
-            <div id="questionDisplay2">
 
+        <template id="temp1" class="text-center">
+            <div>
+                <h5>Consider the following Series</h5>
+                <div data-series></div>
+                <h6 data-question class="mt-4">By the nth term test the series: </h6>
+                <select data-select class="form-select text-center text-bg-secondary">
+                    <option value="0">---Select---</option>
+                    <option value="1">Converges</option>
+                    <option value="2">Diverges</option>
+                    <option value="3">Test is inconclusive</option>
+                </select>
+            </div>
+        </template>
+
+        <template id="temp2" class="text-center">
+            <div>
+                <h5>Consider the following Series</h5>
+                <div data-series></div>
+                <h6 data-question class="mt-4">By the Geometric Test the series: </h6>
+                <select data-select class="form-select text-center text-bg-secondary">
+                    <option value="0">---Select---</option>
+                    <option value="1">Converges</option>
+                    <option value="2">Diverges</option>
+                    <option value="3">Test is inconclusive</option>
+                </select>
+                <h6 data-question2 class="mt-4">By the Geometric Test the series: </h6>
+                <div data-inputAndButtonsParent class="vstack">
+                    <div class="form-floating">
+                        <input data-input type="number" step="any" class="form-control text-center form-control-lg"
+                            placeholder="needThis">
+                        <label class="opacity-75">(Answer should be rounded or truncated to at least 3 decimal
+                            places)</label>
+                    </div>
+                    <div data-inputButtons class="btn-group btn-group-sm">
+                        <button id='sos' class="btn btn-light border-black">\[\infty\]</button>
+                        <button class="btn btn-light border-black">\[-\infty\]</button>
+                        <button class="btn btn-light border-black">Does not Exist</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="temp3" class="text-center">
+            <div>
+                <h5>Consider the following Series</h5>
+                <div data-series></div>
+                <h6 data-question class="mt-4">By the p-series test, the series: </h6>
+                <select data-select class="form-select text-center text-bg-secondary">
+                    <option value="0">---Select---</option>
+                    <option value="1">Converges</option>
+                    <option value="2">Diverges</option>
+                    <option value="3">Test is inconclusive</option>
+                </select>
+                <h6 data-question2 class="mt-4">Because: </h6>
+                <select data-select2 class="form-select text-center text-bg-secondary">
+                    <option value="0">---Select---</option>
+                    <option value="1">\[p \gt 1\]</option>
+                    <option value="2">\[0 \lt p \leq 1\]</option>
+                    <option value="3">\[p \gt 0\]</option>
+                </select>
+            </div>
+        </template>
+
+        <template id="tempUnderlineReplace">
+            <div><input type="text" disabled class="border-3 border-dark border-top-0 border-start-0 border-end-0"></div>
+        </template>
+
+    </div>
+
+
+
+
+
+
+
+    <!-- GAMEPAGE -->
+    <div id="gamePage" class="page">
+        <dialog id="rulesModal" class="text-center text-bg-info">
+            <h1><u>Welcome to Hangman</u></h1>
+            <h5>Get as much points as possible before losing all your lives</h5>
+            <h5>Answering questions right earns points and extra time</h5>
+            <h5>You lose a life when you get a question wrong</h5>
+            <h5>You lose a life everytime the timer bar runs out</h5>
+            <h5>The timer bar runs faster as your score gets higher</h5>
+            <button class="btn btn-secondary btn-lg">Play Game</button>
+        </dialog>
+
+        <div class="container text-center">
+            <div class="row">
+                <div class="col">
+                    <button class="menuButton btn btn-info mt-3">
+                        <div class="display-6">Menu</div>
+                    </button>
+                </div>
+                <div class="col-8">
+                    <div class="display-4"><u>Game</u></div>
+                </div>
+                <div class="col">
+
+                </div>
             </div>
 
-            <button id="submitButton2">Submit</button>
-            <button class="menuButton">Menu</button>
+            <div class="row mt-3 mb-3">
+                <div class="col">
+                    <div id="highScore" class="display-6">HighScore: <span>0</span></div>
+                </div>
+                <div class="col">
+                    <div id="score" class="display-6">Score: <span>300</span></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="row mt-3">
+                        <h4>Time Left</h4>
+                    </div>
+
+                    <!-- did some weird stuff with this progress bar -->
+                    <div class="row">
+                        <div id="progressBar" class="my-progress-bar bg-dark display-6 rounded-2">
+                            <div class="bg-success display-6 rounded-2"></div>
+                        </div>
+                    </div>
+
+                    <div data-hangmanParentDiv style="height: 80%;" class="row">
+                        <div class="hangmanBase">
+                            <div class="hangmanPole1"></div>
+                            <div class="hangmanPole2"></div>
+                            <div class="hangmanPole3"></div>
+                            <div id="hangmanBodyParts">
+                                <div class="hangmanHead hangmanDamageAnimation"></div>
+                                <div class="hangmanBack hangmanDamageAnimation"></div>
+                                <div class="hangmanLeftArm hangmanDamageAnimation"></div>
+                                <div class="hangmanRightArm hangmanDamageAnimation"></div>
+                                <div class="hangmanRightLeg hangmanDamageAnimation"></div>
+                                <div class="hangmanLeftLeg hangmanDamageAnimation"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-8">
+                    <div class="card text-bg-light">
+                        <div class="card-header">Question#<span>1</span></div>
+                        <div class="card-body">
+                            <div id="questionDisplay2">
+                                <!-- inject JS elements here -->
+                            </div>
+                            <div class="vstack gap-3 mt-5">
+                                <h3 class="bg-warning"><u>Select A Choice Below</u></h3>
+                                <button id="choice1" class="choice btn btn-outline-dark"></button>
+                                <button id="choice3" class="choice btn btn-outline-dark"></button>
+                                <button id="choice4" class="choice btn btn-outline-dark"></button>
+                                <button id="choice2" class="choice btn btn-outline-dark"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <dialog id="gameOverModal" class="text-center min-width-75vw">
+            <div class="display-6"><u>GAME OVER</u></div>
+            <h4>You got these questions wrong: </h4>
+            <div id="wrongMCQDisplay" class="vstack gap-3 mt-5">
+                <!-- inject JS elements here -->
+            </div>
+            <button class="menu btn btn-secondary btn-lg mt-2">Menu</button>
+        </dialog>
+
+        <template id="tempGameOverModal">
+            <div class="border border-2 border-danger rounded-2">
+                <div data-question></div>
+                <div data-explaination class="m-5"></div>
+            </div>
+        </template>
+
+
+    </div>
     </div>
 
 </body>
+
 </html>

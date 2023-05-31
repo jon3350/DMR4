@@ -1,3 +1,10 @@
+//used to return a problem object containing a questions the answers and the input DOM elements
+//contains methods to check the answer as well
+
+
+//infinity symbol ∞
+//-infinity symbol −∞
+
 SeriesUtil = {
 	factoryProblem() {
 		return {
@@ -40,32 +47,18 @@ SeriesUtil = {
 		}
 	},
 
-	//creates a select input with array of values and texts of equal length
-	createSelectInput(values, texts) {
-		const select = document.createElement('select');
-		select.setAttribute('type', 'select');
-
-		const option = document.createElement('option');
-		option.setAttribute('value', '0');
-		option.innerText = '--select--';
-		select.append(option);
-
-		for (let i = 0; i < values.length; i++) {
-			const option = document.createElement('option');
-			option.setAttribute('value', values[i]);
-			option.innerText = texts[i];
-			select.append(option);
-		}
-
-		return select;
-	},
-
-	//creates a math input box
-	createTextInput() {
-		const input = document.createElement('input');
-		input.setAttribute('type', 'number');
-		input.setAttribute('step', 'any');
-		return input;
+	//call this to attach infty to number input
+	linkButtonsToInput(input, buttonArr) {
+		buttonArr.forEach(x => {
+			x.addEventListener('click', () => {
+				// input.value = x.innerText;
+				input.setAttribute('type', 'text');
+				input.value = x.innerText;
+			})
+		})
+		input.addEventListener('focus', () => {
+			input.setAttribute('type', 'number');
+		})
 	},
 
 	generateNthProblem() {
@@ -83,8 +76,6 @@ SeriesUtil = {
 
 		const problem = SeriesUtil.factoryProblem();
 
-		problem.inputs = [SeriesUtil.createSelectInput(['1', '2', '3'], ['converges', 'diverges', 'test is inconclusive'])];
-
 		if (!converges) {
 			problem.series = `\\sum_{1}^{\\infty} \\frac{${a.toLatex()}}{${b.toLatex()}}`;
 			problem.answers = ['2'];
@@ -93,14 +84,13 @@ SeriesUtil = {
 			problem.answers = ['3'];
 		}
 
-		const question = document.createElement('div');
-		const div = document.createElement('div');
-		div.innerText = `Consider the following Series: \\[${problem.series}\\]`;
-		const span = document.createElement('span');
-		span.innerText = `Using the nth term test, the series `;
-		question.append(div);
-		question.append(span);
-		question.append(problem.inputs[0]);
+		const question = document.querySelector('#temp1').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]')];
+		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
+		question.querySelector('[data-question]').innerText = 'By the nth term test, the series: ';
+		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
+		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
+		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
 		problem.question = question;
 
 		const explaination = document.createElement('div');
@@ -130,26 +120,23 @@ SeriesUtil = {
 
 		const problem = SeriesUtil.factoryProblem();
 		problem.series = `\\sum_{1}^{\\infty} (${fraction.toLatex()})^n`;
-		problem.inputs = [SeriesUtil.createSelectInput(['1', '2', '3'], ['converges', 'diverges', 'test is inconclusive']), SeriesUtil.createTextInput()];
 		if (converges) {
 			problem.answers = ['1', (fraction.toDecimal()) / (1 - fraction.toDecimal())];
 		} else {
 			problem.answers = ['2', ''];
 		}
 
-		const question = document.createElement('div');
-		const div = document.createElement('div');
-		div.innerText = `Consider the following Series: \\[${problem.series}\\]`;
-		const span1 = document.createElement('span');
-		span1.innerText = `Using the geometric term test, the series `;
-		const span2 = document.createElement('span');
-		span2.innerText = `. If the series has a sum, enter it to 3 decimal places `;
-		question.append(div);
-		question.append(span1);
-		question.append(problem.inputs[0]);
-		question.append(span2);
-		question.append(problem.inputs[1]);
-		problem.question = question;
+		const question = document.querySelector('#temp2').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-input]')];
+		this.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
+		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
+		question.querySelector('[data-question]').innerText = 'By the geometric test, the series: ';
+		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
+		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
+		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
+		question.querySelector('[data-question2]').innerText = 'If the series has a sum enter it: ';
+		problem.question = question;		
+		
 
 		const explaination = document.createElement('div');
 		if (converges) {
@@ -194,7 +181,7 @@ SeriesUtil = {
 		const span1 = document.createElement('span');
 		span1.innerText = `Using the telescoping series test, the series `;
 		const span2 = document.createElement('span');
-		span2.innerText = `. If the series has a sum, enter it to 3 decimal places `;
+		span2.innerText = `If the series has a sum, enter it to at least 3 decimal places: `;
 		question.append(div);
 		question.append(span1);
 		question.append(problem.inputs[0]);
@@ -239,7 +226,7 @@ SeriesUtil = {
 		const span1 = document.createElement('span');
 		span1.innerText = `Using the integral test, the series `;
 		const span2 = document.createElement('span');
-		span2.innerText = `. If the integral converges, enter it to 3 decimal places `;
+		span2.innerText = `If the integral converges, enter it to at least 3 decimal places `;
 		question.append(div);
 		question.append(span1);
 		question.append(problem.inputs[0]);
@@ -280,26 +267,25 @@ SeriesUtil = {
 
 		const problem = SeriesUtil.factoryProblem();
 		problem.series = `\\sum_{1}^{\\infty} ${frac}`;
-		problem.inputs = [SeriesUtil.createSelectInput(['1', '2', '3'], ['converges', 'diverges', 'test is inconclusive']), SeriesUtil.createSelectInput(['1', '2'], ['0 < p \u2264 1', 'p > 1'])];
 		if (converges) {
 			problem.answers = ['1', '2'];
 		} else {
 			problem.answers = ['2', '1'];
 		}
 
-		const question = document.createElement('div');
-		const div = document.createElement('div');
-		div.innerText = `Consider the following Series: \\[${problem.series}\\]`;
-		const span1 = document.createElement('span');
-		span1.innerText = `Using the p-series test, the series `;
-		const span2 = document.createElement('span');
-		span2.innerText = `. because `;
-		question.append(div);
-		question.append(span1);
-		question.append(problem.inputs[0]);
-		question.append(span2);
-		question.append(problem.inputs[1]);
+		const question = document.querySelector('#temp3').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-select2]')];
+		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
+		question.querySelector('[data-question]').innerText = 'By the p-series test, the series: ';
+		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
+		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
+		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
+		question.querySelector('[data-question2]').innerText = 'Because: ';
+		question.querySelectorAll('[data-select2] option')[1].innerText = '\\[p \\gt 1\\]';
+		question.querySelectorAll('[data-select2] option')[2].innerText = '\\[0 \\lt p \\leq 1\\]';
+		question.querySelectorAll('[data-select2] option')[3].innerText = '\\[p \\gt 0\\]';
 		problem.question = question;
+
 
 		const explaination = document.createElement('div');
 		if (converges) {
