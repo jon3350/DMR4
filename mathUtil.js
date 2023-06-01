@@ -117,7 +117,14 @@ const MathUtil = {
 				if(!this.isPositive) {
 					dec *= -1;
 				}
-				dec = Math.floor(dec * 1000) / 1000;
+				return dec;
+			},
+			toDecimalRounded() {
+				let dec = this.numerator/this.denominator;
+				if(!this.isPositive) {
+					dec *= -1;
+				}
+				dec = MathUtil.round(dec);
 				return dec;
 			}
 		}
@@ -135,6 +142,20 @@ const MathUtil = {
 	//return a random number [low,high]
 	randomNumber(low, high) {
 		return Math.floor(Math.random() * (high - low + 1)) + low;
+	},
+
+	//truncates a number to 3 decimal places
+	truncate(decimal) {
+		if(decimal > 0) {
+			return Math.floor(decimal * 1000) / 1000;
+		} else {
+			return Math.ceil(decimal * 1000) / 1000;
+		}
+	},
+
+	//rounds to three decimal places
+	round(num) {
+		return Math.round(num * 1000) / 1000;
 	},
 
 	//remove 1 from expression 1x

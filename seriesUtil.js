@@ -6,6 +6,11 @@
 //-infinity symbol −∞
 
 SeriesUtil = {
+	infSymbol: '∞',
+	negInfSymbol: '−∞',
+	dneSymbol: '∄',
+	autoCorrect: 'correct!',
+
 	factoryProblem() {
 		return {
 			series: 'latex',
@@ -22,29 +27,26 @@ SeriesUtil = {
 				this.diffuculty = diffuculty;
 			},
 			checkAnswer() { //this method can be overwritten if need be customized, '' => true/don't need answer
-				return this.answers.every((x, i) => {
-					if (x == '') {
+				const inputsRef = this.inputs; //this is weird so need this ref
+				return this.answers.every((x,i) => {
+					if (x == SeriesUtil.autoCorrect) {
 						return true;
 					}
-					return SeriesUtil.testEquals(this.inputs[i].value, x);
+					if(x == SeriesUtil.infSymbol || x == SeriesUtil.negInfSymbol || x == SeriesUtil.dneSymbol) {
+						return x == inputsRef[i].value;
+					}
+					return SeriesUtil.testEquals(inputsRef[i].value, x);
 				});
 			}
 		}
 	},
 
-	//test if the input is within three decimal places of answer
+	//test if the input is within three decimal places of answer; gives a +-0.002 margin of error
 	testEquals(input, answer) {
 		input = Math.floor(eval(input) * 1000) / 1000;
 		answer = eval(answer);
-		const truncate = Math.floor(answer * 1000) / 1000;
-		const round = lenientRound(answer * 1000) / 1000;
 
-		return input == truncate || input == round;
-
-		//give 0.0001 margin of error for double issues
-		function lenientRound(num) {
-			return Math.floor(num + 0.5001);
-		}
+		return Math.abs(input - answer) <= 0.002;
 	},
 
 	//call this to attach infty to number input
@@ -70,45 +72,57 @@ SeriesUtil = {
 		const a = MathUtil.generatePolynomial2(terms, highPower);
 		const b = MathUtil.generatePolynomial2(terms, lowPower);
 
-		if (highPower == lowPower) {
-			converges = false;
+		let fractionLatex;
+		if(highPower==lowPower || !converges) {
+			fractionLatex = `\\frac{${a.toLatex()}}{${b.toLatex()}}`;
+		} else if(converges) {
+			fractionLatex = `\\frac{${b.toLatex()}}{${a.toLatex()}}`;
+		} else {
+			console.error('mistake');
 		}
+
 
 		const problem = SeriesUtil.factoryProblem();
 
-		if (!converges) {
-			problem.series = `\\sum_{1}^{\\infty} \\frac{${a.toLatex()}}{${b.toLatex()}}`;
-			problem.answers = ['2'];
-		} else {
-			problem.series = `\\sum_{1}^{\\infty} \\frac{${b.toLatex()}}{${a.toLatex()}}`;
-			problem.answers = ['3'];
-		}
+		//set the explaination and answers
+		const explaination = document.createElement('div');
+		if (highPower == lowPower) {
+			const newFraction = MathUtil.factoryFraction();
+			newFraction.initialize3(Math.abs(a.constants[0]), Math.abs(b.constants[0]), Math.sign(a.constants[0]) == Math.sign(b.constants[0]));
+			newFraction.reduceFraction();
+			explaination.innerText = `\\( \\lim\\limits_{n \\to \\infty } \\left( ${fractionLatex} \\right) = ${newFraction.toLatexStandAlone()} \\neq 0 \\therefore \\) the series diverges`;
 
-		const question = document.querySelector('#temp1').content.firstElementChild.cloneNode(true);
-		problem.inputs = [question.querySelector('[data-select]')];
+			problem.answers = ['2', newFraction.toDecimal()];
+		} else if (converges) {
+			explaination.innerText = `\\( \\lim\\limits_{n\\to \\infty } \\left( ${fractionLatex} \\right) = 0 \\therefore \\) the nth term test fails`;
+			
+			problem.answers = ['3', 0];
+		} else {
+			let plusMinusInfinity;
+			if (Math.sign(a.constants[0]) == Math.sign(b.constants[0])) {
+				plusMinusInfinity = SeriesUtil.infSymbol;
+			} else {
+				plusMinusInfinity = SeriesUtil.negInfSymbol;
+			}
+			explaination.innerText = `\\( \\lim\\limits_{n\\to \\infty } \\left( ${fractionLatex} \\right) = ${plusMinusInfinity} \\neq 0 \\therefore \\) the series diverges`;
+
+			problem.answers = ['2', plusMinusInfinity];
+		}
+		problem.explaination = explaination;
+
+		problem.series = `\\sum_{1}^{\\infty} ${fractionLatex}`;
+
+		const question = document.querySelector('#temp2').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-input]')];
+		SeriesUtil.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
 		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
 		question.querySelector('[data-question]').innerText = 'By the nth term test, the series: ';
 		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
 		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
 		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
+		question.querySelector('[data-question2]').innerText = `because \\( \\lim\\limits_{n \\to \\infty } \\left( ${fractionLatex} \\right) = \\)`;
+		
 		problem.question = question;
-
-		const explaination = document.createElement('div');
-		if (highPower == lowPower) {
-			newFraction = MathUtil.factoryFraction();
-			newFraction.initialize3(Math.abs(a.constants[0]), Math.abs(b.constants[0]), Math.sign(a.constants[0]) == Math.sign(b.constants[0]));
-			newFraction.reduceFraction();
-			explaination.innerText = `\\( \\lim\\limits_{n \\to \\infty } \\left( \\frac{${a.toLatex()}}{${b.toLatex()}} \\right) = ${newFraction.toLatexStandAlone()} \\neq 0 \\therefore \\) the series diverges`;
-		} else if (converges) {
-			explaination.innerText = `\\( \\lim\\limits_{n\\to \\infty } \\left( \\frac{${b.toLatex()}}{${a.toLatex()}} \\right) = 0 \\therefore \\) the nth term test fails`;
-		} else {
-			if (Math.sign(a.constants[0]) == Math.sign(b.constants[0])) {
-				explaination.innerText = `\\( \\lim\\limits_{n\\to \\infty } \\left( \\frac{${a.toLatex()}}{${b.toLatex()}} \\right) = \\infty \\neq 0 \\therefore \\) the series diverges`;
-			} else {
-				explaination.innerText = `\\( \\lim\\limits_{n\\to \\infty } \\left( \\frac{${a.toLatex()}}{${b.toLatex()}} \\right) = -\\infty \\neq 0 \\therefore \\) the series diverges`;
-			}
-		}
-		problem.explaination = explaination;
 
 		return problem;
 	},
@@ -123,27 +137,27 @@ SeriesUtil = {
 		if (converges) {
 			problem.answers = ['1', (fraction.toDecimal()) / (1 - fraction.toDecimal())];
 		} else {
-			problem.answers = ['2', ''];
+			problem.answers = ['2', SeriesUtil.autoCorrect];
 		}
 
 		const question = document.querySelector('#temp2').content.firstElementChild.cloneNode(true);
 		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-input]')];
-		this.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
+		SeriesUtil.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
 		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
 		question.querySelector('[data-question]').innerText = 'By the geometric test, the series: ';
 		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
 		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
 		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
-		question.querySelector('[data-question2]').innerText = 'If the series has a sum enter it: ';
+		question.querySelector('[data-question2]').innerText = 'If the series has a finite sum enter it: ';
 		problem.question = question;		
 		
 
 		const explaination = document.createElement('div');
 		if (converges) {
-			explaination.innerText = `\\( \\left| r \\right| = \\left| ${fraction.toLatex()} \\right| < 1 \\therefore \\) the series converges by geometric series`;
-			explaination.innerText += `. The sum of the series is \\( \\frac{a}{1-r} = \\frac{${fraction.toLatex()}}{1-${fraction.toLatex()}} = ${problem.answers[1]} \\)`;
+			explaination.innerText = `\\( \\left| r \\right| = \\left| ${fraction.toLatex()} \\right| < 1 \\therefore \\) the series converges by the geometric series test`;
+			explaination.innerText += `. The sum of the series is \\( \\frac{a}{1-r} = \\frac{${fraction.toLatex()}}{1-${fraction.toLatex()}} = ${MathUtil.round(problem.answers[1])} \\)`;
 		} else {
-			explaination.innerText = `\\( \\left| r \\right| = \\left| ${fraction.toLatex()} \\right| > 1 \\therefore \\) the series diverges by geometric series and there is no finite sum`;
+			explaination.innerText = `\\( \\left| r \\right| = \\left| ${fraction.toLatex()} \\right| > 1 \\therefore \\) the series diverges by the geometric series test and there is no finite sum`;
 		}
 		problem.explaination = explaination;
 
@@ -171,29 +185,24 @@ SeriesUtil = {
 
 		const problem = SeriesUtil.factoryProblem();
 		problem.series = `\\sum_{1}^{\\infty} \\frac{${a}}{${MathUtil.emptyIfOne(b)}n+${c}} - \\frac{${a}}{${MathUtil.emptyIfOne(b)}n+${b + c}}`;
-		problem.inputs = [SeriesUtil.createSelectInput(['1', '2', '3'], ['converges', 'diverges', 'test is inconclusive']), SeriesUtil.createTextInput()];
 		problem.answers = ['1', a / (b + c)];
 
-
-		const question = document.createElement('div');
-		const div = document.createElement('div');
-		div.innerText = `Consider the following Series: \\[${problem.series}\\]`;
-		const span1 = document.createElement('span');
-		span1.innerText = `Using the telescoping series test, the series `;
-		const span2 = document.createElement('span');
-		span2.innerText = `If the series has a sum, enter it to at least 3 decimal places: `;
-		question.append(div);
-		question.append(span1);
-		question.append(problem.inputs[0]);
-		question.append(span2);
-		question.append(problem.inputs[1]);
-		problem.question = question;
+		const question = document.querySelector('#temp2').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-input]')];
+		SeriesUtil.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
+		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
+		question.querySelector('[data-question]').innerText = 'Using the telescoping series test, the series: ';
+		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
+		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
+		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
+		question.querySelector('[data-question2]').innerText = 'If the series has a finite sum enter it: ';
+		problem.question = question;		
+		
 
 		const explaination = document.createElement('div');
-		explaination.innerText = `\\( \\lim\\limits_{n \\to \\infty} \\frac{${a}}{${MathUtil.emptyIfOne(b)}n+${c}} - \\frac{${a}}{${MathUtil.emptyIfOne(b)}n+${b + c}} = L \\therefore \\) the series converges by telescoping series`;
-		explaination.innerText += `. The sum of the series is \\( a-L = ${problem.answers[1]} \\)`;
+		explaination.innerText = `\\( \\lim\\limits_{n \\to \\infty} \\frac{${a}}{${MathUtil.emptyIfOne(b)}n+${b + c}} = L \\therefore \\) the series converges by telescoping series`;
+		explaination.innerText += `. The sum of the series is \\( a-L = ${MathUtil.round(problem.answers[1])} \\)`;
 		problem.explaination = explaination;
-
 
 		return problem;
 	},
@@ -202,53 +211,47 @@ SeriesUtil = {
 		let converges = Math.random() < 0.5;
 
 		const a = MathUtil.randomNumber(1, 9);
-		const b = MathUtil.randomNumber(1, 5);
-		const c = MathUtil.randomNumber(1, 5);
+		const b = MathUtil.randomNumber(1, 4);
+		const c = MathUtil.randomNumber(1, 4);
 		let d;
 		if (converges) {
-			d = MathUtil.randomNumber(2, 5);
+			d = MathUtil.randomNumber(2, 4);
 		} else {
 			d = 1;
 		}
 
 		const problem = SeriesUtil.factoryProblem();
-		problem.series = `\\sum_{1}^{\\infty} \\frac{${a}}{\\left( ${MathUtil.emptyIfOne(b)}n+${c} \\right) ${MathUtil.emptyIfOneExponential(`^${d}`, d)}}`;
-		problem.inputs = [SeriesUtil.createSelectInput(['1', '2', '3'], ['converges', 'diverges', 'test is inconclusive']), SeriesUtil.createTextInput()];
+		const fracRef = `\\frac{${a}}{\\left( ${MathUtil.emptyIfOne(b)}n+${c} \\right) ${MathUtil.emptyIfOneExponential(`^${d}`, d)}}`;
+		const fracRefX = `\\frac{${a}}{\\left( ${MathUtil.emptyIfOne(b)}x+${c} \\right) ${MathUtil.emptyIfOneExponential(`^${d}`, d)}}`;
+		problem.series = `\\sum_{1}^{\\infty} ${fracRef}`;
 		if (converges) {
 			problem.answers = ['1', a/( b*(d-1)*((b+c)**(d-1)) )];
 		} else {
-			problem.answers = ['2', ''];
+			problem.answers = ['2', SeriesUtil.infSymbol];
 		}
 
-		const question = document.createElement('div');
-		const div = document.createElement('div');
-		div.innerText = `Consider the following Series: \\[${problem.series}\\]`;
-		const span1 = document.createElement('span');
-		span1.innerText = `Using the integral test, the series `;
-		const span2 = document.createElement('span');
-		span2.innerText = `If the integral converges, enter it to at least 3 decimal places `;
-		question.append(div);
-		question.append(span1);
-		question.append(problem.inputs[0]);
-		question.append(span2);
-		question.append(problem.inputs[1]);
-		problem.question = question;
+		const question = document.querySelector('#temp2').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-input]')];
+		SeriesUtil.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
+		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
+		question.querySelector('[data-question]').innerText = 'Using the integral test, the series: ';
+		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
+		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
+		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
+		question.querySelector('[data-question2]').innerText = `because \\( \\int_{1}^{\\infty}${fracRefX}dx \\) = `;
+		problem.question = question;		
+
 
 		const explaination = document.createElement('div');
 		if (converges) {
-			explaination.innerText = `The integral converges (add work later)`;
-			explaination.innerText += `. The integral value is ${problem.answers[1]}`;
+			explaination.innerText = `The series converges because \\( \\int_{1}^{\\infty}${fracRefX}dx = \\frac{${a}}{${b}(${d}-1)(${b+c})^{(${d-1})}} = ${MathUtil.round(problem.answers[1])} \\)`;
 		} else {
-			explaination.innerText = `Take the integral and it diverges (add work later)`;
+			explaination.innerText = `The series diverges because \\( \\int_{1}^{\\infty}${fracRefX}dx = \\frac{${a}}{${b}} \\ln(${b}x+${c}) |^{\\infty}_{1} = ${SeriesUtil.infSymbol} \\)`;
 		}
 		problem.explaination = explaination;
 
 
 		return problem;
-
-
-
-
 	},
 
 	generatePSeriesProblem() {
@@ -268,9 +271,9 @@ SeriesUtil = {
 		const problem = SeriesUtil.factoryProblem();
 		problem.series = `\\sum_{1}^{\\infty} ${frac}`;
 		if (converges) {
-			problem.answers = ['1', '2'];
+			problem.answers = ['1', '1'];
 		} else {
-			problem.answers = ['2', '1'];
+			problem.answers = ['2', '2'];
 		}
 
 		const question = document.querySelector('#temp3').content.firstElementChild.cloneNode(true);
@@ -317,25 +320,21 @@ SeriesUtil = {
 
 		const problem = SeriesUtil.factoryProblem();
 		problem.series = `\\sum_{1}^{\\infty} ${frac}`;
-		problem.inputs = [SeriesUtil.createSelectInput(['1', '2', '3'], ['converges', 'diverges', 'test is inconclusive']), SeriesUtil.createTextInput()];
 		if (converges) {
 			problem.answers = ['1', `${low}/${high}`];
 		} else {
 			problem.answers = ['2', `${high}/${low}`];
 		}
 
-		const question = document.createElement('div');
-		const div = document.createElement('div');
-		div.innerText = `Consider the following Series: \\[${problem.series}\\]`;
-		const span1 = document.createElement('span');
-		span1.innerText = `Using the ratio test, the series `;
-		const span2 = document.createElement('span');
-		span2.innerText = `. Input the limit from the ratio test to 3 decimal places `;
-		question.append(div);
-		question.append(span1);
-		question.append(problem.inputs[0]);
-		question.append(span2);
-		question.append(problem.inputs[1]);
+		const question = document.querySelector('#temp2').content.firstElementChild.cloneNode(true);
+		problem.inputs = [question.querySelector('[data-select]'), question.querySelector('[data-input]')];
+		SeriesUtil.linkButtonsToInput(question.querySelector('[data-input]'), Array.from(question.querySelector('[data-inputButtons]').children) );
+		question.querySelector('[data-series]').innerText = `\\[${problem.series}\\]`;
+		question.querySelector('[data-question]').innerText = 'Using the ratio test, the series: ';
+		question.querySelectorAll('[data-select] option')[1].innerText = 'converges';
+		question.querySelectorAll('[data-select] option')[2].innerText = 'diverges';
+		question.querySelectorAll('[data-select] option')[3].innerText = 'test is inconclusive';
+		question.querySelector('[data-question2]').innerText = '\\[ \\lim\\limits_{n \\to \\infty} \\left| \\frac{a_{n+1}}{a_{n}} \\right| = \\]';
 		problem.question = question;
 
 		const explaination = document.createElement('div');

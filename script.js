@@ -4,4 +4,4 @@ const pageArr = [MenuPage.factoryMenuPage(), NotesPage.factoryNotesPage(), Pract
 const pageManager = PageUtil.factoryPageManager3(pageContainer, pageArr, 0);
 pageManager.hideAllPagesExceptActive();
 
-pageManager.changePage(0);
+pageManager.changePage(2);
