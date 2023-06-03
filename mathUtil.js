@@ -47,7 +47,7 @@ const MathUtil = {
 					}
 
 					if (this.powers[i] > 1) {
-						s += `x^${this.powers[i]}`;
+						s += `x^{${this.powers[i]}}`;
 					} else if (this.powers[i] == 1) {
 						s += `x`;
 					} else if (this.powers[i] == 0) {

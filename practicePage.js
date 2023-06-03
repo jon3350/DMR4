@@ -80,6 +80,11 @@ const PracticePage = {
         },
 
         generateProblem() {
+            if (!this.checkboxes.some(x => x.checked)) {
+                alert('at least one valid thing must be checked');
+                return;
+            }
+
             this.submitButton.removeAttribute('disabled');
             this.closeModalButton.removeAttribute('disabled');
             this.answerModal.close();
@@ -87,22 +92,10 @@ const PracticePage = {
 
             this.questionNumberDiv.innerHTML = ++this.tracker.questionNumber;
 
-            this.checkboxes[5].checked = false;
-            this.checkboxes[6].checked = false;
-            this.checkboxes[7].checked = false;
-
-            if (!this.checkboxes.some(x => x.checked)) {
-                alert('at least one valid thing must be checked');
-                return;
-            }
-
-            let r = MathUtil.randomNumber(1, 9);
+            let r = MathUtil.randomNumber(1, 11);
             while (!this.checkboxes[r - 1].checked) {
-                r = MathUtil.randomNumber(1, 9);
+                r = MathUtil.randomNumber(1, 11);
             }
-
-            //TESTING ONLY
-            // r=9;
 
             if (r == 1) {
                 this.tracker.problem = SeriesUtil.generateNthProblem();
@@ -114,8 +107,25 @@ const PracticePage = {
                 this.tracker.problem = SeriesUtil.generateIntegralTestProblem();
             } else if (r == 5) {
                 this.tracker.problem = SeriesUtil.generatePSeriesProblem();
+            } else if (r == 6) {
+                this.tracker.problem = SeriesUtil.generateDirectComparisonProblem();
+            } else if (r == 7) {
+                this.tracker.problem = SeriesUtil.generateLimitComparisonProblem();
+            } else if (r == 8) {
+                this.tracker.problem = SeriesUtil.generateASTProblem();
             } else if (r == 9) {
+                this.tracker.problem = SeriesUtil.generateASTRemainderProblem();
+            } else if (r == 10) {
                 this.tracker.problem = SeriesUtil.generateRatioTestExpression();
+            } else if (r == 11) {
+                const n = MathUtil.randomNumber(1,3);
+                if(n == 1) {
+                    this.tracker.problem = SeriesUtil.generateSequenceProblem1();
+                } else if(n == 2) {
+                    this.tracker.problem = SeriesUtil.generateSequenceProblem2();
+                } else if(n == 3) {
+                    this.tracker.problem = SeriesUtil.generateSequenceProblem3();
+                }
             }
 
             this.questionDisplay.replaceChildren(this.tracker.problem.question);

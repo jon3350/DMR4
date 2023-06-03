@@ -10,7 +10,7 @@ const GamePage = {
         score: document.querySelector('#score span'),
         highScore: document.querySelector('#highScore span'),
         questionDisplay2: document.querySelector('#questionDisplay2'),
-        choices: Array.from(document.querySelectorAll('.choice')),
+        submitButton2: document.querySelector('#submitButton2'),
         progressBar: document.querySelector('#gamePage #progressBar div'),
 
         gameOverModal: document.querySelector('#gameOverModal'),
@@ -19,13 +19,13 @@ const GamePage = {
         rulesModal: document.querySelector('#rulesModal'),
         rulesModalButton: document.querySelector('#rulesModal button'),
 
+        modalScoreDisplay: document.querySelector('#gameOverModal [data-modalScoreDisplay]'),
+
         initialize() {
             document.querySelector('#gamePage .menuButton').addEventListener('click', () => pageManager.changePage(0));
             gameOverModal.querySelector('.menu').addEventListener('click', () => pageManager.changePage(0));
 
-            this.choices.forEach((x,i) => {
-                x.addEventListener('click', () => this.answerChosen(i));
-            });
+            this.submitButton2.addEventListener('click', () => this.submitButtonClicked()); //must be wrapped as an anonomous function for some reason
 
             this.rulesModalButton.addEventListener('click', () => this.startGame());
 
@@ -34,8 +34,6 @@ const GamePage = {
         },
         setUp() {
             this.rulesModal.showModal();
-
-            this.resizeHangman();
 
             this.hangmanBodyParts.forEach(x => x.classList.add('hide'));
 
@@ -46,6 +44,8 @@ const GamePage = {
             this.tracker.wrong = [];
 
             this.reDraw();
+
+            this.resizeHangman();
         },
         closeUp() {
             window.clearInterval(this.timer.interval);
@@ -55,7 +55,9 @@ const GamePage = {
         startGame() {
             this.rulesModal.close();
             this.timer.start();
-            this.generateMcq();
+            this.generateProblem();
+
+            this.resizeHangman();
         },
 
         resizeHangman() {
@@ -66,7 +68,7 @@ const GamePage = {
         },
 
         tracker: {
-            mcq: null,
+            problem: null,
             questionNumber: '1',
             correctNumber: '0',
             lives: 6,
@@ -89,7 +91,7 @@ const GamePage = {
             },
             updateTime() {
                 const delta = Date.now() - GamePage.gamePage.timer.prev;
-                GamePage.gamePage.timer.time -= delta * (5 + (GamePage.gamePage.tracker.score/1000) );
+                GamePage.gamePage.timer.time -= delta * (2);
                 GamePage.gamePage.timer.prev = Date.now();
 
                 // health bar
@@ -121,8 +123,8 @@ const GamePage = {
             }
         },
 
-        answerChosen(answerChosen) {
-            if (this.tracker.mcq.checkAnswer(answerChosen)) {
+        submitButtonClicked() {
+            if (this.tracker.problem.checkAnswer()) {
                 this.tracker.score += 1000;
 
                 // animation
@@ -131,17 +133,17 @@ const GamePage = {
                 void this.score.offsetWidth; 
                 this.score.classList.add('scoreIncreaseAnimation');
 
-                this.timer.time += 0.1 * this.timer.maxTime;
+                this.timer.time += (0.1 + 0.9/(this.tracker.score/1000)) * this.timer.maxTime;
                 if(this.timer.time >= this.timer.maxTime) {
                     this.timer.time = this.timer.maxTime;
                 }
             } else {
                 this.hangmanBodyParts[6-this.tracker.lives].classList.remove('hide');
                 this.tracker.lives--;
-                this.tracker.wrong.push(this.tracker.mcq);
+                this.tracker.wrong.push(this.tracker.problem);
             }
             this.reDraw();
-            this.generateMcq();
+            this.generateProblem();
 
             if(this.tracker.lives == 0 || this.timer.time <= 0) {
                 this.gameOver();
@@ -161,25 +163,51 @@ const GamePage = {
             this.tracker.wrong.forEach(x => {
                 console.log(x);
                 const group = document.querySelector('#tempGameOverModal').content.firstElementChild.cloneNode(true);
-                group.querySelector('[data-question]').append(x.mcqQuestion);
-                group.querySelector('[data-explaination]').append(x.problem.explaination);
+                group.querySelector('[data-question]').append(x.question);
+                group.querySelector('[data-explaination]').append(x.explaination);
                 this.wrongMCQDisplay.append(group);
-            })
+            });
+
             
             MathUtil.typeset();
+            this.modalScoreDisplay.innerText = this.tracker.score;
             this.gameOverModal.showModal();
         },
 
-        generateMcq() {
-            // const mcq = McqUtil.generateNthTermMCQ();
-            // const mcq = McqUtil.generateGeometricMCQ();
-            const mcq = McqUtil.generatePSeriesMCQ();
-            this.tracker.mcq = mcq;
-            this.choices.forEach((x,i) => {
-                x.innerHTML = mcq.mcqChoices[i];
-            });
+        generateProblem() {
+            let r = MathUtil.randomNumber(1, 11);
 
-            this.questionDisplay2.replaceChildren(mcq.mcqQuestion);
+            if (r == 1) {
+                this.tracker.problem = SeriesUtil.generateNthProblem();
+            } else if (r == 2) {
+                this.tracker.problem = SeriesUtil.generateGeometricProblem();
+            } else if (r == 3) {
+                this.tracker.problem = SeriesUtil.generateTelescopingProblem();
+            } else if (r == 4) {
+                this.tracker.problem = SeriesUtil.generateIntegralTestProblem();
+            } else if (r == 5) {
+                this.tracker.problem = SeriesUtil.generatePSeriesProblem();
+            } else if (r == 6) {
+                this.tracker.problem = SeriesUtil.generateDirectComparisonProblem();
+            } else if (r == 7) {
+                this.tracker.problem = SeriesUtil.generateLimitComparisonProblem();
+            } else if (r == 8) {
+                this.tracker.problem = SeriesUtil.generateASTProblem();
+            } else if (r == 9) {
+                this.tracker.problem = SeriesUtil.generateASTRemainderProblem();
+            } else if (r == 10) {
+                this.tracker.problem = SeriesUtil.generateRatioTestExpression();
+            } else if (r == 11) {
+                const n = MathUtil.randomNumber(1,3);
+                if(n == 1) {
+                    this.tracker.problem = SeriesUtil.generateSequenceProblem1();
+                } else if(n == 2) {
+                    this.tracker.problem = SeriesUtil.generateSequenceProblem2();
+                } else if(n == 3) {
+                    this.tracker.problem = SeriesUtil.generateSequenceProblem3();
+                }
+            }
+            this.questionDisplay2.replaceChildren(this.tracker.problem.question);
 
             MathUtil.typeset();
 

@@ -45,7 +45,7 @@ body {
     width: calc(25 * var(--unit));
     height: calc(1 * var(--unit));
 
-    top: 50%;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%)  translate(0px, calc(25/2 * var(--unit)));
 }

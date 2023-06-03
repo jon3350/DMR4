@@ -13,12 +13,11 @@
         crossorigin="anonymous"></script>
     <script src="mathUtil.js" defer></script>
     <script src="seriesUtil.js" defer></script>
-    <script src="mcqUtil.js" defer></script>
     <script src="pageUtil.js" defer></script>
-    <script src="menuPage.js" defer></script>
-    <script src="notesPage.js" defer></script>
-    <script src="practicePage.js" defer></script>
-    <script src="gamePage.js" defer></script>
+    <script src="pageFolder/menuPage.js" defer></script>
+    <script src="pageFolder/notesPage.js" defer></script>
+    <script src="pageFolder/practicePage.js" defer></script>
+    <script src="pageFolder/gamePage.js" defer></script>
     <script src="script.js" defer></script>
     <script type="text/javascript" id="MathJax-script" async
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
@@ -266,7 +265,19 @@
                                 <div class="form-check form-switch col">
                                     <label class="form-check-label">
                                         <input type="checkbox" class="form-check-input">
+                                        AST Remainder
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
                                         Ratio Test
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch col">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        Sequences
                                     </label>
                                 </div>
                             </div>
@@ -374,6 +385,68 @@
             </div>
         </template>
 
+        <template id="temp4" class="text-center">
+            <div>
+                <h5>Consider the following Series</h5>
+                <div data-series></div>
+                <h6 data-question class="mt-4">By the p-series test, the series: </h6>
+                <select data-select class="form-select text-center text-bg-secondary">
+                    <option value="0">---Select---</option>
+                    <option value="1">Converges</option>
+                    <option value="2">Diverges</option>
+                    <option value="3">Test is inconclusive</option>
+                </select>
+                <h6 data-question2 class="mt-4">Because: </h6>
+                <!-- no floating label or extra buttons on this one -->
+                <div class="vstack">
+                        <input data-input type="number" step="any" class="form-control text-center form-control-lg"
+                            placeholder="enter p">
+                </div>
+                <h6 data-question3 class="mt-4">By the Geometric Test the series: </h6>
+                <div data-inputAndButtonsParent2 class="vstack">
+                    <div class="form-floating">
+                        <input data-input2 type="number" step="any" class="form-control text-center form-control-lg"
+                            placeholder="needThis">
+                        <label class="opacity-75">(Answer should be rounded or truncated to at least 3 decimal
+                            places)</label>
+                    </div>
+                    <div data-inputButtons2 class="btn-group btn-group-sm">
+                        <button class="btn btn-light border-black">∞</button>
+                        <button class="btn btn-light border-black">−∞</button>
+                        <button class="btn btn-light border-black">∄</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="tempSequence" class="text-center">
+            <div>
+                <h5>Consider the following Sequence</h5>
+                <div data-series></div>
+                <h6 data-question class="mt-4">The sequence: </h6>
+                <select data-select class="form-select text-center text-bg-secondary">
+                    <option value="0">---Select---</option>
+                    <option value="1">Converges</option>
+                    <option value="2">Diverges</option>
+                    <option value="3">Test is inconclusive</option>
+                </select>
+                <h6 data-question2 class="mt-4">The limit of the sequence is: </h6>
+                <div data-inputAndButtonsParent class="vstack">
+                    <div class="form-floating">
+                        <input data-input type="number" step="any" class="form-control text-center form-control-lg"
+                            placeholder="needThis">
+                        <label class="opacity-75">(Answer should be rounded or truncated to at least 3 decimal
+                            places)</label>
+                    </div>
+                    <div data-inputButtons class="btn-group btn-group-sm">
+                        <button class="btn btn-light border-black">∞</button>
+                        <button class="btn btn-light border-black">−∞</button>
+                        <button class="btn btn-light border-black">∄</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         <template id="tempUnderlineReplace">
             <div><input type="text" disabled class="border-3 border-dark border-top-0 border-start-0 border-end-0"></div>
         </template>
@@ -394,7 +467,7 @@
             <h5>Answering questions right earns points and extra time</h5>
             <h5>You lose a life when you get a question wrong</h5>
             <h5>You lose a life everytime the timer bar runs out</h5>
-            <h5>The timer bar runs faster as your score gets higher</h5>
+            <h5>You get less bonus time as your score gets higher</h5>
             <button class="btn btn-secondary btn-lg">Play Game</button>
         </dialog>
 
@@ -460,13 +533,9 @@
                             <div id="questionDisplay2">
                                 <!-- inject JS elements here -->
                             </div>
-                            <div class="vstack gap-3 mt-5">
-                                <h3 class="bg-warning"><u>Select A Choice Below</u></h3>
-                                <button id="choice1" class="choice btn btn-outline-dark"></button>
-                                <button id="choice3" class="choice btn btn-outline-dark"></button>
-                                <button id="choice4" class="choice btn btn-outline-dark"></button>
-                                <button id="choice2" class="choice btn btn-outline-dark"></button>
-                            </div>
+                            <button id="submitButton2" class="btn btn-info m-3">
+                                <div class="display-6">Submit</div>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -475,6 +544,7 @@
 
         <dialog id="gameOverModal" class="text-center min-width-75vw">
             <div class="display-6"><u>GAME OVER</u></div>
+            <h3>Final Score: <span data-modalScoreDisplay></span></h3>
             <h4>You got these questions wrong: </h4>
             <div id="wrongMCQDisplay" class="vstack gap-3 mt-5">
                 <!-- inject JS elements here -->
